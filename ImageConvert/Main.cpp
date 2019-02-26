@@ -26,6 +26,6 @@ int main()
 	cout << "elemSize1:" << img.elemSize1() << endl;
 
 	system("pause");
-	return 0;
+	return 1;
 
 }
