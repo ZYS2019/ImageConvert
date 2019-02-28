@@ -9,31 +9,62 @@ int main()
 	int IFromRGBW(const cv::Mat src, const float RW, const float GW, const float BW,cv::Mat dst);
 	int HSI(const cv::Mat src, cv::Mat dst);
 	int RGB(const cv::Mat src, cv::Mat dst);
+	int PlaneOne(const cv::Mat src, cv::Mat dst);
 
 	Mat src;
 	src = imread("C:/Users/SZJ/Desktop/1.jpg", 1);
 	Mat hsi_img(src.rows, src.cols, CV_8UC3);
 	Mat ifw_img(src.rows, src.cols, CV_8UC1);
 	Mat rgb_img(src.rows, src.cols, CV_8UC3);
+	Mat planeOne(src.rows, src.cols, CV_8UC1);
+	//Mat hsiimread(src.rows, src.cols, CV_8UC3);  
+	//Mat H(src.rows, src.cols, CV_8UC1);
+	//Mat S(src.rows, src.cols, CV_8UC1);
+	//Mat I(src.rows, src.cols, CV_8UC1);
+	//std::vector<Mat> channels;
 
+	//int a = HSI(src, hsi_img);
+	//imwrite("C:/Users/SZJ/Desktop/hsi.jpg", hsi_img);        //保存利用BGR2HSV转换得到的hsi图像
+	//hsiimread = imread("C:/Users/SZJ/Desktop/hsi.jpg", 1);     //读入存储的hsi图像，看h通道的取值范围
 
-	int a = HSI(src, hsi_img);
-	int b = RGB(hsi_img, rgb_img);
+	//int b = RGB(hsi_img, rgb_img);
+	
+	/*
+	//--------------------看hsi格式图像H通道分量---------------
+	split(hsiimread, channels);
+	H = channels.at(0);
+	S = channels.at(1);
+	I = channels.at(2);
 
-	int runmode = 3;
+	if (hsiimread.channels() == 3)
+	{
+		imshow("hsiimread", hsiimread);
+	}
+	//imshow("H", H);
+	//imshow("S", S);
+	//imshow("I", I);
+	//cout << "h:" << H << endl;       //输出H的值发现H通道的取值范围为0-180
+	*/
+	int runmode = 1;
 	if (runmode == 1)
 	{
 		int resVal = IFromRGBW(src, 0.333, 0.333, 0.333, ifw_img);	
 	}
-	if (runmode == 0)
+	else if (runmode == 0)
 	{
 		int resVal = HSI(src, hsi_img);
 	}
+	else if (runmode == 2)
+	{
+		int resVal = PlaneOne(src, planeOne);
+	}
 
-	//imshow("I", ifw_img);
-	imshow("HSI", hsi_img);
-	imshow("RGB", rgb_img);
-	imshow("原图", src);
+	imshow("planeone", planeOne);
+	imshow("I", ifw_img);
+	//imshow("HSI", hsi_img);
+	//imshow("RGB", rgb_img);
+	//imshow("原图", src);
+
 	
 	/*
 	cout << "dims:" <<a.dims << endl;
@@ -86,5 +117,13 @@ int HSI(const cv::Mat src, cv::Mat dst)
 int RGB(const cv::Mat src, cv::Mat dst)
 {
 	cvtColor(src, dst, COLOR_HSV2BGR);
+	return 0;
+}
+
+int PlaneOne(const cv::Mat src, cv::Mat dst)
+{
+	std::vector<Mat> channels;
+	split(src, channels);
+	dst = channels.at(0);
 	return 0;
 }
