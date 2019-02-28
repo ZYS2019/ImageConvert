@@ -2,6 +2,7 @@
 #include<iostream>
 #include<string>
 
+
 using namespace std;
 using namespace cv;
 int main()
@@ -9,14 +10,22 @@ int main()
 	int IFromRGBW(const cv::Mat src, const float RW, const float GW, const float BW,cv::Mat dst);
 	int HSI(const cv::Mat src, cv::Mat dst);
 	int RGB(const cv::Mat src, cv::Mat dst);
-	int PlaneOne(const cv::Mat src, cv::Mat dst);
+	int Plane(const cv::Mat src,const int plane, cv::Mat &dst);
+	int I(const cv::Mat src, cv::Mat &dst);
 
 	Mat src;
 	src = imread("C:/Users/SZJ/Desktop/1.jpg", 1);
 	Mat hsi_img(src.rows, src.cols, CV_8UC3);
 	Mat ifw_img(src.rows, src.cols, CV_8UC1);
 	Mat rgb_img(src.rows, src.cols, CV_8UC3);
-	Mat planeOne(src.rows, src.cols, CV_8UC1);
+	Mat bc(src.rows, src.cols, CV_8UC1);
+	Mat intensity;
+
+
+	int resVal = Plane(src, 1, bc);
+	resVal = I(bc, intensity);
+
+	bc = imread("C:/Users/SZJ/Desktop/1.jpg", 1);
 	//Mat hsiimread(src.rows, src.cols, CV_8UC3);  
 	//Mat H(src.rows, src.cols, CV_8UC1);
 	//Mat S(src.rows, src.cols, CV_8UC1);
@@ -45,7 +54,8 @@ int main()
 	//imshow("I", I);
 	//cout << "h:" << H << endl;       //输出H的值发现H通道的取值范围为0-180
 	*/
-	int runmode = 1;
+
+	int runmode = 7;
 	if (runmode == 1)
 	{
 		int resVal = IFromRGBW(src, 0.333, 0.333, 0.333, ifw_img);	
@@ -56,30 +66,66 @@ int main()
 	}
 	else if (runmode == 2)
 	{
-		int resVal = PlaneOne(src, planeOne);
+		int resVal=Plane(hsi_img,1, bc);
+	}
+	else if (runmode == 3) {
+		int resVal = RGB(hsi_img, rgb_img);
 	}
 
-	imshow("planeone", planeOne);
-	imshow("I", ifw_img);
+	//cout << "channels:" << bc.channels() << endl;
+	imshow("I", intensity);
+	imshow("SRC", bc);
 	//imshow("HSI", hsi_img);
 	//imshow("RGB", rgb_img);
 	//imshow("原图", src);
-
+	//imshow("b通道", bc);
 	
 	/*
 	cout << "dims:" <<a.dims << endl;
 	cout << "rows:" << img.rows << endl;
 	cout << "cols:" << img.cols << endl;
-	cout << "channels:" << img.channels() << endl;
+	
 	
 	cout << "depth:" << img.depth() << endl;
 	cout << "elemSize:" << img.elemSize() << endl;
 	cout << "elemSize1:" << img.elemSize1() << endl;
 	*/
 	waitKey(0);
-	system("pause");
+	//system("pause");
 	return 0;
 
+}
+
+int I(const cv::Mat src, cv::Mat &dst)
+{
+	if (src.type() == CV_8UC1)
+	{
+		src.copyTo(dst);
+	}
+	return 0;
+}
+
+
+int Plane(const cv::Mat src, const int plane, cv::Mat &dst)
+{
+	if (src.channels() == 3)
+	{
+		std::vector<Mat> channels;
+		split(src, channels);
+		if (plane == 0) {
+			dst = channels.at(0);
+		}
+		else if (plane == 1) {
+			dst = channels.at(1);
+		}
+		else if (plane == 2) {
+			dst = channels.at(2);
+		}
+	}
+	else {
+		return 1;
+	}
+	return 0;
 }
 
 int IFromRGBW(const cv::Mat src, const float RW, const float GW, const float BW,cv::Mat dst)
@@ -117,13 +163,5 @@ int HSI(const cv::Mat src, cv::Mat dst)
 int RGB(const cv::Mat src, cv::Mat dst)
 {
 	cvtColor(src, dst, COLOR_HSV2BGR);
-	return 0;
-}
-
-int PlaneOne(const cv::Mat src, cv::Mat dst)
-{
-	std::vector<Mat> channels;
-	split(src, channels);
-	dst = channels.at(0);
 	return 0;
 }
